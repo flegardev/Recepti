@@ -28,7 +28,7 @@ not need a service-role key for normal CRUD, export, seeding, or deployment.
 ## Prerequisites
 
 - A Git repository containing this project and its committed `pnpm-lock.yaml`.
-- Node.js 22 LTS or newer and pnpm 11.14.0.
+- Node.js 22.x LTS and pnpm 11.14.0.
 - Docker Desktop for local Supabase verification.
 - A Supabase project whose database password and project reference you control.
 - A Google Cloud OAuth web client.
@@ -41,6 +41,8 @@ Install the locked dependencies and run the application checks:
 ```bash
 pnpm install --frozen-lockfile
 pnpm format:check
+pnpm audit
+pnpm audit --prod
 pnpm lint
 pnpm typecheck
 pnpm test
@@ -94,7 +96,7 @@ pnpm exec supabase migration list
 
 The ordered migrations under `supabase/migrations/` are authoritative. Apply
 them in timestamp order through
-`20260726153500_shared_member_recipe_delete.sql`. Do not reproduce them manually
+`20260809105247_optimize_household_rls_indexes.sql`. Do not reproduce them manually
 in the Dashboard, and do not use `db push --include-seed`: `supabase/seed.sql`
 is realistic development data and must not populate production.
 
@@ -105,8 +107,7 @@ addresses that will be assigned to Vercel `OWNER_EMAILS`:
 select private.configure_owner_emails(
   array[
     'owner@example.com',
-    'second-owner@example.com',
-    'vukovic.nadia7@gmail.com'
+    'second-owner@example.com'
   ]
 );
 ```
@@ -262,7 +263,7 @@ Vercel CLI commands are documented in
       from the release commit.
 - [ ] Local `db reset --local` and `pnpm test:db` pass.
 - [ ] Hosted migration history contains every checked-in migration through
-      `20260726153500_shared_member_recipe_delete`.
+      `20260809105247_optimize_household_rls_indexes`.
 - [ ] The database owner allowlist matches Production `OWNER_EMAILS`.
 - [ ] `/settings/diagnostics` passes as the owner and redirects logged-out and
       non-owner identities.
@@ -321,7 +322,7 @@ them.
 
 Run `pnpm exec supabase migration list` against the linked project. Apply every
 checked-in migration through
-`20260726153500_shared_member_recipe_delete` before deploying the
+`20260809105247_optimize_household_rls_indexes` before deploying the
 matching application.
 
 ### OAuth fails or returns to the wrong hostname

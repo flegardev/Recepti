@@ -93,7 +93,7 @@ select private.configure_owner_emails(
   array[
     'owner@example.test',
     'member@example.test',
-    'vukovic.nadia7@gmail.com'
+    'third-owner@example.test'
   ],
   false
 );

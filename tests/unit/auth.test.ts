@@ -26,14 +26,14 @@ describe("owner email authorization", () => {
 
   it("accepts every configured owner and denies an unlisted account", () => {
     const owners = [
-      "tini.flegar@gmail.com",
-      "flegartech@gmail.com",
-      "vukovic.nadia7@gmail.com",
+      "primary-owner@example.test",
+      "second-owner@example.test",
+      "third-owner@example.test",
     ];
 
-    expect(isOwnerEmail(" TINI.FLEGAR@GMAIL.COM ", owners)).toBe(true);
-    expect(isOwnerEmail("flegartech@gmail.com", owners)).toBe(true);
-    expect(isOwnerEmail("vukovic.nadia7@gmail.com", owners)).toBe(true);
+    expect(isOwnerEmail(" PRIMARY-OWNER@EXAMPLE.TEST ", owners)).toBe(true);
+    expect(isOwnerEmail("second-owner@example.test", owners)).toBe(true);
+    expect(isOwnerEmail("third-owner@example.test", owners)).toBe(true);
     expect(isOwnerEmail("visitor@example.test", owners)).toBe(false);
     expect(isOwnerEmail(null, owners)).toBe(false);
     expect(isOwnerEmail(undefined, owners)).toBe(false);

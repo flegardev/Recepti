@@ -82,10 +82,10 @@ Running it twice therefore does not create duplicate recipes or images.
 ## Deployment
 
 1. Take a Supabase database backup and confirm Storage recovery is available.
-2. Confirm `OWNER_EMAILS` in the application includes every existing owner plus
-   `vukovic.nadia7@gmail.com`, then deploy the membership-aware application.
+2. Confirm `OWNER_EMAILS` in the application includes every intended household
+   owner, then deploy the membership-aware application.
 3. Apply migrations through
-   `20260726113040_shared_household_cookbook.sql`.
+   `20260809105247_optimize_household_rls_indexes.sql`.
 4. Verify `get_cookbook_context()`, cross-owner recipe CRUD, private image
    reads, and non-member denial.
 5. Run Supabase database and security advisors and review any private-schema

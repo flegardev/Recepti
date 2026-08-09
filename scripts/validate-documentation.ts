@@ -7,6 +7,7 @@ const documentationFiles = [
   "docs/authentication.md",
   "docs/database.md",
   "docs/deployment.md",
+  "docs/shared-household-migration.md",
 ] as const;
 
 function read(relativePath: string): string {
@@ -93,14 +94,14 @@ for (const [documentPath, source] of documentation) {
   }
 }
 
-const ignoredPnpmCommands = new Set(["dlx", "exec", "install"]);
+const builtInPnpmCommands = new Set(["audit", "dlx", "exec", "install"]);
 for (const [documentPath, source] of documentation) {
   for (const match of source.matchAll(
     /(?:^|\n)\s*pnpm ([\w:-]+)|`pnpm ([\w:-]+)/gu,
   )) {
     const command = match[1] ?? match[2];
     if (
-      ignoredPnpmCommands.has(command) ||
+      builtInPnpmCommands.has(command) ||
       Object.hasOwn(packageJson.scripts ?? {}, command)
     ) {
       continue;
