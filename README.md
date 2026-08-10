@@ -565,3 +565,11 @@ no larger than 6 MiB whose extension matches its MIME type and file signature.
 
 Nana's Recipes is maintained by [Tini Flegar](https://github.com/flegardev).
 The product name and kitchen identity remain specific to Nana's Recipes.
+
+
+## Portfolio & Source Rights
+
+This project is part of the [Tini Flegar Software Engineering Portfolio](https://github.com/flegardev/flegartech-site).
+
+The source code is publicly visible for portfolio review and demonstration. For usage terms and rights, please see [PORTFOLIO_USE.md](PORTFOLIO_USE.md).
+
