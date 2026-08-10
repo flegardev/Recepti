@@ -16,12 +16,12 @@ describe("environment validation", () => {
   it("normalizes, lowercases, and deduplicates the server-only owner list", () => {
     vi.stubEnv(
       "OWNER_EMAILS",
-      " tini.flegar@gmail.com, FLEGARTECH@GMAIL.COM, vukovic.nadia7@gmail.com, tini.flegar@gmail.com ",
+      " primary-owner@example.test, SECOND-OWNER@EXAMPLE.TEST, third-owner@example.test, primary-owner@example.test ",
     );
     expect(getOwnerEmails()).toEqual([
-      "tini.flegar@gmail.com",
-      "flegartech@gmail.com",
-      "vukovic.nadia7@gmail.com",
+      "primary-owner@example.test",
+      "second-owner@example.test",
+      "third-owner@example.test",
     ]);
   });
 

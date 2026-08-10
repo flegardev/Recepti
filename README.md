@@ -23,13 +23,13 @@ and deliberately conservative ingredient/quantity logic.
 
 ## Product boundary
 
-| Capability                    | Current contract                                                                   |
-| ----------------------------- | ---------------------------------------------------------------------------------- |
-| Household cookbook            | Shared recipes, pantry, shopping, images, settings, and cooking history            |
-| Multiple allowlisted accounts | One membership-controlled data set; profiles remain per Google identity            |
-| Public demo                   | Isolated sample data stored only in browser state                                  |
-| Package-size planning         | Generic local guidance without retailer products, prices, or availability          |
-| Household collaboration       | Not implemented; there are no memberships, invitations, roles, or shared ownership |
+| Capability                    | Current contract                                                          |
+| ----------------------------- | ------------------------------------------------------------------------- |
+| Household cookbook            | Shared recipes, pantry, shopping, images, settings, and cooking history   |
+| Multiple allowlisted accounts | One membership-controlled data set; profiles remain per Google identity   |
+| Public demo                   | Isolated sample data stored only in browser state                         |
+| Package-size planning         | Generic local guidance without retailer products, prices, or availability |
+| Household access              | Server-managed allowlist; no public invitations or in-app role management |
 
 ## Product highlights
 
@@ -158,7 +158,7 @@ private Storage bucket, recipe/search workflows, pantry/catalog workflows,
 shopping upsert, settings/export, the strict owner gate, legacy export compatibility,
 atomic quick actions, the owner health contract, multi-account access administration,
 theme families, first-use bootstrap, and shared household membership. The
-current head is `20260726153500_shared_member_recipe_delete.sql`. See
+current head is `20260809105247_optimize_household_rls_indexes.sql`. See
 [Database architecture](docs/database.md) for the full ER model, RPC semantics,
 delete behavior, export envelope, and migration workflow.
 [Shared household migration](docs/shared-household-migration.md) documents the
@@ -194,7 +194,7 @@ or Storage object names.
 
 ## Prerequisites
 
-- Node.js 22 LTS or newer (matching `package.json`).
+- Node.js 22.x LTS (matching `package.json`).
 - pnpm (Corepack is suitable).
 - Docker Desktop for the local Supabase stack and database integration tests.
 - A Supabase project and Google Cloud OAuth web client for real login.
@@ -223,7 +223,7 @@ the values printed by `pnpm dlx supabase status`:
 NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54321
 NEXT_PUBLIC_SUPABASE_ANON_KEY=<local-publishable-or-anon-key>
 NEXT_PUBLIC_SITE_URL=http://localhost:3000
-OWNER_EMAILS=owner@example.com,second-owner@example.com,vukovic.nadia7@gmail.com
+OWNER_EMAILS=owner@example.com,second-owner@example.com
 E2E_TEST_MODE=0
 ```
 
@@ -363,6 +363,8 @@ Preview when the variable is absent.
 | `pnpm typecheck`               | Run strict TypeScript without emitting files               |
 | `pnpm test`                    | Run the Vitest unit suite once                             |
 | `pnpm test:watch`              | Run Vitest in watch mode                                   |
+| `pnpm audit`                   | Audit the complete locked dependency graph                 |
+| `pnpm audit --prod`            | Audit only production dependencies                         |
 | `pnpm test:db`                 | Bootstrap local test data and run SQL RLS/RPC smoke tests  |
 | `pnpm test:e2e`                | Run critical Playwright flows with guarded local test auth |
 | `pnpm format`                  | Format the repository with Prettier                        |
@@ -399,6 +401,8 @@ Run the release gate:
 
 ```bash
 pnpm format:check
+pnpm audit
+pnpm audit --prod
 pnpm lint
 pnpm typecheck
 pnpm test
@@ -454,7 +458,7 @@ troubleshooting are in [Deployment guide](docs/deployment.md).
 
 - [ ] Every release-gate command passes from the deploy commit.
 - [ ] Hosted migration history includes every checked-in migration through
-      `20260726153500_shared_member_recipe_delete`.
+      `20260809105247_optimize_household_rls_indexes`.
 - [ ] `private.configure_owner_emails(...)` matches Vercel `OWNER_EMAILS`.
 - [ ] `recipe-images` is private and all table/Storage RLS policies are active.
 - [ ] Supabase Site URL and production callback are exact HTTPS URLs.
@@ -524,7 +528,7 @@ Google. Vercel environment changes require a new deployment.
 
 Run `pnpm exec supabase migration list` for the linked project and apply every
 checked-in migration through
-`20260726153500_shared_member_recipe_delete` before deploying the
+`20260809105247_optimize_household_rls_indexes` before deploying the
 corresponding code. Then open `/settings/diagnostics` as the owner and confirm
 every check passes.
 
@@ -536,8 +540,9 @@ no larger than 6 MiB whose extension matches its MIME type and file signature.
 ## Known limitations
 
 - The product is intentionally personal. Household memberships, invitations,
-  roles, shared ownership, recipe sharing, and public recipes are not implemented.
-  Dormant schema metadata does not expose data or represent a roadmap promise.
+  and role management are administrator-controlled rather than public or self-service.
+  Recipe sharing and public recipes are not implemented; dormant share metadata does
+  not expose data or represent a roadmap promise.
 - Import supports safe merge only; it does not provide replace/overwrite mode.
 - The cookbook data export does not contain private image files, Auth/profile data, share
   grants, or ingredient-substitution relationships.
@@ -555,3 +560,16 @@ no larger than 6 MiB whose extension matches its MIME type and file signature.
 - A first-class directional substitution editor and safety notes.
 - Optional URL import or assisted authoring behind the same validation and
   ownership boundaries.
+
+## Maintainer
+
+Nana's Recipes is maintained by [Tini Flegar](https://github.com/flegardev).
+The product name and kitchen identity remain specific to Nana's Recipes.
+
+
+## Portfolio & Source Rights
+
+This project is part of the [Tini Flegar Software Engineering Portfolio](https://github.com/flegardev/flegartech-site).
+
+The source code is publicly visible for portfolio review and demonstration. For usage terms and rights, please see [PORTFOLIO_USE.md](PORTFOLIO_USE.md).
+

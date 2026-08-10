@@ -32,6 +32,7 @@ The SQL migrations are authoritative:
 | `20260726100911_first_use_cookbook_bootstrap.sql`             | Transactional starter recipes and pantry setup using existing owner-scoped RPCs      |
 | `20260726113040_shared_household_cookbook.sql`                | Shared membership, reversible consolidation, household RLS and Storage namespaces    |
 | `20260726153500_shared_member_recipe_delete.sql`              | Shared-member recipe deletion with canonical ownership and safe image cleanup        |
+| `20260809105247_optimize_household_rls_indexes.sql`           | Cached Auth lookups and covering indexes for household authorization                 |
 
 [`src/types/database.ts`](../src/types/database.ts) mirrors this contract in the
 generated Supabase `Database` format.

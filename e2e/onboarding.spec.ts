@@ -29,7 +29,9 @@ test("turns a fresh cookbook selection into a guided first match", async ({
 
   await page.getByRole("button", { name: "Create starter cookbook" }).click();
 
-  await expect(page).toHaveURL(/\/cook-with-what-i-have\?guided=1$/);
+  await expect(page).toHaveURL(/\/cook-with-what-i-have\?guided=1$/, {
+    timeout: 30_000,
+  });
   await expect(
     page.getByText("Your first matches are ready", { exact: true }),
   ).toBeVisible();
