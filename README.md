@@ -58,7 +58,7 @@ flowchart TD
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/flegardev/recepti.git
+   git clone https://github.com/flegardev/Recepti.git
    cd recepti
    ```
 
