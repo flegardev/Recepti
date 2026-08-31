@@ -1,105 +1,141 @@
-# Nana's Recipes (Recepti)
+# Nana's Recipes (Recepti) -- Private Household Cookbook PWA
 
-Private household cookbook Progressive Web App (PWA) built with Next.js 15 & Supabase, featuring pantry ingredient matching and Row-Level Security.
+A household recipe management Progressive Web App (PWA) built with Next.js 16, React 19, TypeScript, Tailwind CSS, and Supabase PostgreSQL, featuring pantry ingredient matching and Row-Level Security (RLS).
 
-![Nana's Recipes Interface](public/images/nanas-recipes-hero.webp)
+![Nana's Recipes Showcase](./public/images/nanas-recipes-hero.webp)
 
 ## Overview
 
-**Nana's Recipes** is a household cookbook application designed for meal planning, family recipe archiving, and pantry management. Built with Next.js 15 (App Router) and Supabase, it supports multi-owner authorization, pantry ingredient matching (finding recipes based on ingredients you already have), step-by-step cooking execution mode, and offline PWA functionality.
+**Nana's Recipes** is a private household cookbook application designed to store family recipes, assist with meal planning, and reduce food waste through pantry ingredient matching.
 
-## Key Features
+Built as an installable Progressive Web App with an offline-capable service worker, the application connects to a Supabase PostgreSQL database protected by Row-Level Security (RLS) policies that isolate shared household data.
 
-* **Pantry Ingredient Matching**: Enter available pantry items to immediately query matching recipes ranked by missing ingredients.
-* **Multi-Owner Household Authorization**: Shared family households with fine-grained Supabase Row-Level Security (RLS) policies.
-* **Step-by-Step Interactive Cooking Mode**: Fullscreen cooking interface with step progress tracking and scalable portion quantities.
-* **Offline PWA Capabilities**: Service worker caching for offline recipe viewing in the kitchen.
-* **Secure Image & Storage Management**: Supabase Storage buckets for uploading and serving recipe cover photos.
+## Features
+
+- **Pantry Ingredient Matching**: Evaluates available pantry items and dynamically ranks recipes by ingredient availability, highlighting missing ingredients.
+- **Interactive Cooking Mode**: Step-by-step cooking view with integrated preparation timers and checkable instructions.
+- **Automated Shopping Lists**: Generates consolidated grocery lists directly from missing recipe ingredients.
+- **Household Multi-User Access**: Family sharing governed by Supabase Auth and Row-Level Security (`OWNER_EMAILS` allowlist).
+- **Progressive Web App (PWA)**: Installable on mobile and desktop with offline caching powered by a service worker (`public/sw.js`).
+- **Image Optimization**: Recipe photo processing and WebP conversion using Sharp.
+- **Quality Assurance**: Unit and component tests with Vitest, database connectivity tests, and Playwright end-to-end flows.
+
+## Screenshots
+
+| Application Showcase Banner |
+|:---:|
+| ![Nana's Recipes Hero](./public/images/nanas-recipes-hero.webp) |
 
 ## Tech Stack
 
-**Frontend Framework**
-* Next.js 15 (App Router), React 19, TypeScript
-* PWA Service Worker (`next-pwa` / custom worker)
+- **Framework**: Next.js 16 (App Router, Server Actions, Server Components)
+- **UI & Styling**: React 19, Tailwind CSS, Radix UI Primitives, Lucide Icons, Sonner
+- **Database & Auth**: Supabase (PostgreSQL 16, Row-Level Security, Supabase Auth & SSR)
+- **Forms & Validation**: React Hook Form, Zod
+- **Image Processing**: Sharp
+- **PWA & Offline**: Service Worker, Web App Manifest
+- **Testing & Quality**: Vitest, Playwright, Testing Library, ESLint, Prettier
 
-**UI & Styling**
-* Tailwind CSS, Radix UI primitives, Lucide React, Sonner toasts, Shadcn UI patterns
+## Project Structure
 
-**Backend & Database**
-* Supabase PostgreSQL, `@supabase/ssr`, `@supabase/supabase-js`
-* Row-Level Security (RLS) & PostgreSQL Functions
-
-**Quality & Testing**
-* Vitest (Unit tests), Playwright (E2E tests), Prettier, ESLint
-
-## Architecture
-
-```mermaid
-flowchart TD
-    Client["Browser / PWA (Next.js 15 App Router)"]
-    SSR["Next.js Server Components & Middleware"]
-    SupaAuth["Supabase Auth"]
-    SupaDB[(Supabase PostgreSQL + RLS)]
-    SupaStore["Supabase Storage (Recipe Images)"]
-
-    Client -->|Session Cookies| SSR
-    SSR -->|Verify Auth| SupaAuth
-    SSR -->|SQL Query / RLS| SupaDB
-    Client -->|Direct Media Download| SupaStore
+```text
+recepti/
+├── docs/                       # Architecture specs, database schemas, and migration guides
+├── e2e/                        # Playwright end-to-end integration tests
+├── public/                     # Static media, icons, and service worker
+│   ├── images/                 # High-resolution hero showcase images
+│   └── sw.js                   # PWA offline service worker
+├── scripts/                    # Database seeding and documentation validation scripts
+├── src/
+│   ├── app/                    # Next.js App Router routes (recipes, pantry, shopping, auth)
+│   ├── components/             # Reusable UI widgets and Shadcn components
+│   ├── data/                   # Default starter recipes and ingredient categories
+│   ├── features/               # Cookbook, pantry matcher, and cooking mode modules
+│   ├── lib/                    # Supabase client/server singletons and utility helpers
+│   └── types/                  # Database definitions and application TypeScript types
+├── supabase/                   # Supabase SQL migrations and RLS policy scripts
+├── package.json                # Project dependencies and lifecycle scripts
+├── tsconfig.json               # TypeScript strict configuration
+└── vitest.config.ts            # Vitest unit test runner settings
 ```
 
-## Getting Started
+## Installation & Setup
 
 ### Prerequisites
-* Node.js 18+
-* pnpm
 
-### Installation
+- Node.js 20+
+- pnpm (recommended) or npm
+- Supabase Project (Cloud or Local CLI)
 
-1. Clone the repository:
+### Quickstart
+
+1. **Clone the repository:**
    ```bash
-   git clone https://github.com/flegardev/Recepti.git
+   git clone https://github.com/flegardev/recepti.git
    cd recepti
    ```
 
-2. Install dependencies:
+2. **Install dependencies:**
    ```bash
    pnpm install
    ```
 
-3. Set up environment variables:
+3. **Configure environment variables:**
    ```bash
    cp .env.example .env.local
    ```
 
-4. Run the development server:
+4. **Run database seed script (Optional):**
+   ```bash
+   pnpm db:seed
+   ```
+
+5. **Start the local development server:**
    ```bash
    pnpm dev
    ```
 
-## Environment Variables
+6. Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+## Configuration
+
+Configure environment variables in `.env.local`:
 
 ```env
+# Supabase Public Keys (Client-Safe)
 NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
-SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+NEXT_PUBLIC_SITE_URL=http://localhost:3000
+
+# Household Membership Allowlist (Server-Only)
+OWNER_EMAILS=owner@example.com,family-member@example.com
+
+# Testing
+E2E_TEST_MODE=0
 ```
 
-## Development Commands
+## Available Scripts
 
-```bash
-pnpm dev              # Start Next.js development server
-pnpm build            # Build production package
-pnpm typecheck        # Run TypeScript validation
-pnpm test             # Run Vitest unit tests
-pnpm test:e2e         # Run Playwright E2E tests
-pnpm db:seed          # Seed database with sample recipes
-```
+| Command | Description |
+|---|---|
+| `pnpm dev` | Starts Next.js development server on port 3000 |
+| `pnpm build` | Compiles and optimizes production build |
+| `pnpm start` | Starts production server |
+| `pnpm test` | Runs unit and component test suites via Vitest |
+| `pnpm test:e2e` | Executes Playwright end-to-end tests |
+| `pnpm test:db` | Runs database connectivity and schema integrity tests |
+| `pnpm db:seed` | Seeds Supabase with starter family recipes |
+| `pnpm typecheck` | Generates Next.js types and runs strict `tsc --noEmit` |
+| `pnpm lint` | Validates codebase with ESLint |
+| `pnpm format` | Formats all files with Prettier |
 
-## Deployment
+## Database & Security
 
-Deployed on Vercel at [https://recepti-rho.vercel.app](https://recepti-rho.vercel.app).
+Nana's Recipes uses Supabase PostgreSQL:
+- **Supabase Row-Level Security (RLS)** is applied across `recipes`, `ingredients`, `pantry_items`, and `shopping_list`.
+- Authenticated users can only read and mutate rows belonging to verified accounts in `OWNER_EMAILS`.
 
-## License
+## License & Portfolio Notice
 
-This project is open-source software.
+Copyright (c) 2026 Tini Flegar. All rights reserved.
+Published for portfolio review and technical demonstration.
