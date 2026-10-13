@@ -19,11 +19,12 @@ Built as an installable Progressive Web App with an offline-capable service work
 - **Progressive Web App (PWA)**: Installable on mobile and desktop with offline caching powered by a service worker (`public/sw.js`).
 - **Image Optimization**: Recipe photo processing and WebP conversion using Sharp.
 - **Quality Assurance**: Unit and component tests with Vitest, database connectivity tests, and Playwright end-to-end flows.
+- **Appearance**: 7 theme choices: light, dark, pink, pink-dark, blue, blue-dark, and system.
 
 ## Screenshots
 
-| Application Showcase Banner |
-|:---:|
+|                   Application Showcase Banner                   |
+| :-------------------------------------------------------------: |
 | ![Nana's Recipes Hero](./public/images/nanas-recipes-hero.webp) |
 
 ## Tech Stack
@@ -63,34 +64,39 @@ recepti/
 
 ### Prerequisites
 
-- Node.js 20+
-- pnpm (recommended) or npm
+- Node.js 22.x
+- pnpm 11.14.0 (use the committed lockfile)
 - Supabase Project (Cloud or Local CLI)
 
 ### Quickstart
 
 1. **Clone the repository:**
+
    ```bash
    git clone https://github.com/flegardev/recepti.git
    cd recepti
    ```
 
 2. **Install dependencies:**
+
    ```bash
    pnpm install
    ```
 
 3. **Configure environment variables:**
+
    ```bash
    cp .env.example .env.local
    ```
 
 4. **Run database seed script (Optional):**
+
    ```bash
    pnpm db:seed
    ```
 
 5. **Start the local development server:**
+
    ```bash
    pnpm dev
    ```
@@ -104,7 +110,7 @@ Configure environment variables in `.env.local`:
 ```env
 # Supabase Public Keys (Client-Safe)
 NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_your_public_key
 NEXT_PUBLIC_SITE_URL=http://localhost:3000
 
 # Household Membership Allowlist (Server-Only)
@@ -116,22 +122,23 @@ E2E_TEST_MODE=0
 
 ## Available Scripts
 
-| Command | Description |
-|---|---|
-| `pnpm dev` | Starts Next.js development server on port 3000 |
-| `pnpm build` | Compiles and optimizes production build |
-| `pnpm start` | Starts production server |
-| `pnpm test` | Runs unit and component test suites via Vitest |
-| `pnpm test:e2e` | Executes Playwright end-to-end tests |
-| `pnpm test:db` | Runs database connectivity and schema integrity tests |
-| `pnpm db:seed` | Seeds Supabase with starter family recipes |
+| Command          | Description                                            |
+| ---------------- | ------------------------------------------------------ |
+| `pnpm dev`       | Starts Next.js development server on port 3000         |
+| `pnpm build`     | Compiles and optimizes production build                |
+| `pnpm start`     | Starts production server                               |
+| `pnpm test`      | Runs unit and component test suites via Vitest         |
+| `pnpm test:e2e`  | Executes Playwright end-to-end tests                   |
+| `pnpm test:db`   | Runs database connectivity and schema integrity tests  |
+| `pnpm db:seed`   | Seeds Supabase with starter family recipes             |
 | `pnpm typecheck` | Generates Next.js types and runs strict `tsc --noEmit` |
-| `pnpm lint` | Validates codebase with ESLint |
-| `pnpm format` | Formats all files with Prettier |
+| `pnpm lint`      | Validates codebase with ESLint                         |
+| `pnpm format`    | Formats all files with Prettier                        |
 
 ## Database & Security
 
 Nana's Recipes uses Supabase PostgreSQL:
+
 - **Supabase Row-Level Security (RLS)** is applied across `recipes`, `ingredients`, `pantry_items`, and `shopping_list`.
 - Authenticated users can only read and mutate rows belonging to verified accounts in `OWNER_EMAILS`.
 
@@ -139,3 +146,24 @@ Nana's Recipes uses Supabase PostgreSQL:
 
 Copyright (c) 2026 Tini Flegar. All rights reserved.
 Published for portfolio review and technical demonstration.
+
+## Verified maintenance status — 2026-10-13
+
+The browser, server client, and session proxy prefer
+`NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`; `NEXT_PUBLIC_SUPABASE_ANON_KEY` remains a
+legacy fallback. Secret keys and service-role JWTs are rejected by public
+environment validation. Keep privileged credentials out of every `NEXT_PUBLIC_*`
+variable.
+
+Next.js and sharp have been updated, alongside patched transitive dependencies.
+The production dependency audit has no reported findings. The complete audit
+still reports the development-only `braces` advisory
+[GHSA-vfj7-8cjw-p6xm](https://github.com/advisories/GHSA-vfj7-8cjw-p6xm).
+The advisory names version 3.0.4 as patched, but that version was not published
+in npm when checked. The full CI audit remains a release gate; do not force a
+framework downgrade or silently suppress it.
+
+The public sample at `/preview` is separate from private household persistence.
+The connected Supabase project was inactive during the audit. Local mocked
+authentication tests do not verify live Google OAuth, storage, or RLS. Restore
+and inspect the existing project and its backups before approving migrations.

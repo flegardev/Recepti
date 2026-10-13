@@ -49,8 +49,51 @@ describe("environment validation", () => {
       "https://lfrwpxkbsnqabmhymjaa.supabase.co",
     );
     vi.stubEnv("NEXT_PUBLIC_SUPABASE_ANON_KEY", undefined);
+    vi.stubEnv("NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY", undefined);
 
     expect(hasSupabaseEnvironment()).toBe(false);
     expect(() => getPublicEnvironment()).toThrow(/Supabase configuration/);
+  });
+
+  it("prefers a publishable key and supports legacy anon configuration", () => {
+    vi.stubEnv("NEXT_PUBLIC_SUPABASE_URL", "https://example.supabase.co");
+    vi.stubEnv("NEXT_PUBLIC_SUPABASE_ANON_KEY", "legacy-public-anon-test-key");
+    vi.stubEnv(
+      "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY",
+      "sb_publishable_example_public_test",
+    );
+    expect(hasSupabaseEnvironment()).toBe(true);
+    expect(getPublicEnvironment().NEXT_PUBLIC_SUPABASE_ANON_KEY).toBe(
+      "sb_publishable_example_public_test",
+    );
+    vi.stubEnv("NEXT_PUBLIC_SUPABASE_ANON_KEY", undefined);
+    expect(hasSupabaseEnvironment()).toBe(true);
+    expect(getPublicEnvironment().NEXT_PUBLIC_SUPABASE_ANON_KEY).toBe(
+      "sb_publishable_example_public_test",
+    );
+    vi.stubEnv("NEXT_PUBLIC_SUPABASE_ANON_KEY", "legacy-public-anon-test-key");
+    vi.stubEnv("NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY", undefined);
+    expect(getPublicEnvironment().NEXT_PUBLIC_SUPABASE_ANON_KEY).toBe(
+      "legacy-public-anon-test-key",
+    );
+  });
+
+  it.each([
+    "sb_secret_example_test_private",
+    "eyJhbGciOiJIUzI1NiJ9." +
+      btoa(JSON.stringify({ role: "service_role" })) +
+      ".test",
+  ])("rejects privileged public configuration without revealing it", (key) => {
+    vi.stubEnv("NEXT_PUBLIC_SUPABASE_URL", "https://example.supabase.co");
+    vi.stubEnv("NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY", key);
+    expect(hasSupabaseEnvironment()).toBe(false);
+    expect(() => getPublicEnvironment()).toThrow(
+      /public Supabase configuration/,
+    );
+    try {
+      getPublicEnvironment();
+    } catch (error) {
+      expect(String(error)).not.toContain(key);
+    }
   });
 });

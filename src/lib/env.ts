@@ -2,8 +2,30 @@ import { z } from "zod";
 
 const publicEnvironmentSchema = z.object({
   NEXT_PUBLIC_SUPABASE_URL: z.url(),
-  NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().min(20),
+  NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().min(20).refine(isPublicSupabaseKey),
 });
+
+function isPublicSupabaseKey(key: string): boolean {
+  if (key.startsWith("sb_secret_")) return false;
+  if (key.startsWith("eyJ")) {
+    try {
+      const payload = JSON.parse(
+        atob(key.split(".")[1].replace(/-/g, "+").replace(/_/g, "/")),
+      );
+      return payload.role === "anon";
+    } catch {
+      return false;
+    }
+  }
+  return true;
+}
+
+function publicSupabaseKey(): string | undefined {
+  return (
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  );
+}
 
 const ownerEmailSchema = z
   .string()
@@ -27,21 +49,21 @@ const siteUrlSchema = z.url().refine((value) => {
 export type PublicEnvironment = z.infer<typeof publicEnvironmentSchema>;
 
 export function hasSupabaseEnvironment(): boolean {
-  return Boolean(
-    process.env.NEXT_PUBLIC_SUPABASE_URL &&
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-  );
+  return publicEnvironmentSchema.safeParse({
+    NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
+    NEXT_PUBLIC_SUPABASE_ANON_KEY: publicSupabaseKey(),
+  }).success;
 }
 
 export function getPublicEnvironment(): PublicEnvironment {
   const parsed = publicEnvironmentSchema.safeParse({
     NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
-    NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+    NEXT_PUBLIC_SUPABASE_ANON_KEY: publicSupabaseKey(),
   });
 
   if (!parsed.success) {
     throw new Error(
-      "Nana's Recipes is missing its Supabase configuration. Copy .env.example to .env.local and add the project URL and anon key.",
+      "Nana's Recipes is missing valid public Supabase configuration. Add the project URL and a publishable key (or legacy anon key). Never use a secret or service-role key.",
     );
   }
 

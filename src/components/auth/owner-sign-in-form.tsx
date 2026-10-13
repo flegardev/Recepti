@@ -20,6 +20,8 @@ export function OwnerSignInForm({
     if (pending) return;
     setPending(true);
     const parameters = new URLSearchParams({ next: nextPath });
+    // OAuth redirects require document navigation, outside the Next.js router.
+    // eslint-disable-next-line @next/next/no-location-assign-relative-destination
     window.location.assign(`/auth/login?${parameters.toString()}`);
   }
 

@@ -177,13 +177,14 @@ should select pnpm.
 
 Set these in Project Settings -> Environment Variables:
 
-| Variable                        | Development                    | Preview                                              | Production                   | Notes                                             |
-| ------------------------------- | ------------------------------ | ---------------------------------------------------- | ---------------------------- | ------------------------------------------------- |
-| `NEXT_PUBLIC_SUPABASE_URL`      | Hosted or local URL            | Hosted/staging URL                                   | Hosted production URL        | Public project endpoint                           |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Matching publishable/anon key  | Matching key                                         | Matching production key      | Safe for the browser only because RLS is enforced |
-| `OWNER_EMAILS`                  | Allowed Google emails          | Allowed test emails                                  | Exact household membership   | Server-only; admitted accounts share one cookbook |
-| `NEXT_PUBLIC_SITE_URL`          | `http://localhost:3000`        | Usually omit, or use one exact stable preview origin | Exact canonical HTTPS origin | No path; Nana's Recipes appends `/auth/callback`  |
-| `E2E_TEST_MODE`                 | Playwright sets it temporarily | **Do not set**                                       | **Do not set**               | Local automated tests only                        |
+| Variable                               | Development                    | Preview                                              | Production                   | Notes                                                      |
+| -------------------------------------- | ------------------------------ | ---------------------------------------------------- | ---------------------------- | ---------------------------------------------------------- |
+| `NEXT_PUBLIC_SUPABASE_URL`             | Hosted or local URL            | Hosted/staging URL                                   | Hosted production URL        | Public project endpoint                                    |
+| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Public publishable key         | Matching preview key                                 | Matching production key      | Browser-safe only with correct RLS; never use a secret key |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY`        | Optional legacy fallback       | Optional legacy fallback                             | Optional legacy fallback     | Used only when the publishable variable is absent          |
+| `OWNER_EMAILS`                         | Allowed Google emails          | Allowed test emails                                  | Exact household membership   | Server-only; admitted accounts share one cookbook          |
+| `NEXT_PUBLIC_SITE_URL`                 | `http://localhost:3000`        | Usually omit, or use one exact stable preview origin | Exact canonical HTTPS origin | No path; Nana's Recipes appends `/auth/callback`           |
+| `E2E_TEST_MODE`                        | Playwright sets it temporarily | **Do not set**                                       | **Do not set**               | Local automated tests only                                 |
 
 Do not add the Google secret, database password, JWT signing secret, or
 Supabase service-role key to this application. A Vercel environment change
