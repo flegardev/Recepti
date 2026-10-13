@@ -159,8 +159,9 @@ Next.js and sharp have been updated, alongside patched transitive dependencies.
 The production dependency audit has no reported findings. The complete audit
 still reports the development-only `braces` advisory
 [GHSA-vfj7-8cjw-p6xm](https://github.com/advisories/GHSA-vfj7-8cjw-p6xm).
-The advisory names version 3.0.4 as patched, but that version was not published
-in npm when checked. The full CI audit remains a release gate; do not force a
+GitHub's advisory lists no patched version. The earlier audit metadata suggested
+3.0.4, but that version was not published in npm when checked. The full CI audit
+remains a release gate; do not force a
 framework downgrade or silently suppress it.
 
 The public sample at `/preview` is separate from private household persistence.
