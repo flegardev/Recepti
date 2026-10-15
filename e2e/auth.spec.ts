@@ -92,6 +92,9 @@ test.describe("private cookbook authorization", () => {
       .click();
     await page.getByRole("button", { name: /Temporary list/ }).click();
     await expect(page.getByText("Mushrooms", { exact: true })).toBeVisible();
+    await expect(
+      page.getByRole("listitem").filter({ hasText: "Mushrooms" }),
+    ).toContainText("312.5 g");
 
     await page.getByRole("button", { name: "Back to recipe ranking" }).click();
     await page

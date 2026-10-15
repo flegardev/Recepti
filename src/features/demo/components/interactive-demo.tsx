@@ -19,10 +19,11 @@ import { DemoRecipeDetail } from "@/features/demo/components/demo-recipe-detail"
 import { DemoShoppingList } from "@/features/demo/components/demo-shopping-list";
 import {
   addMissingIngredients,
+  scaleDemoRecipe,
   toggleShoppingItem,
 } from "@/features/demo/demo-state";
 import { demoIngredients, demoPantry, demoRecipes } from "@/lib/data/demo";
-import { rankRecipes } from "@/lib/domain";
+import { matchRecipe, rankRecipes } from "@/lib/domain";
 import type { ShoppingListItem } from "@/types/domain";
 
 type DemoView = "explore" | "recipe" | "cooking" | "shopping";
@@ -55,8 +56,21 @@ export function InteractiveDemo() {
   const selectedRecipe =
     demoRecipes.find((recipe) => recipe.id === selectedRecipeId) ??
     demoRecipes[0];
-  const selectedMatch = results.find(
-    (result) => result.recipe.id === selectedRecipe?.id,
+  const selectedMatch = useMemo(
+    () =>
+      selectedRecipe
+        ? matchRecipe(
+            scaleDemoRecipe(selectedRecipe, servings),
+            availablePantry,
+            {
+              ignoreStaples: true,
+              stapleIngredients: demoIngredients.filter(
+                (item) => item.isStaple,
+              ),
+            },
+          )
+        : undefined,
+    [selectedRecipe, servings, availablePantry],
   );
 
   const openRecipe = (recipeId: string) => {
@@ -106,7 +120,9 @@ export function InteractiveDemo() {
           item.recipeId === selectedRecipe?.id &&
           (missing.key.startsWith("id:")
             ? item.ingredientId === missing.key.slice(3)
-            : item.ingredientName === missing.name),
+            : item.ingredientName === missing.name) &&
+          item.quantity === missing.requiredQuantity &&
+          item.unit === missing.requiredUnit,
       ),
     );
 

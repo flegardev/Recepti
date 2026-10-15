@@ -1,5 +1,16 @@
-import type { RecipeMatchResult } from "@/lib/domain";
+import { scaleQuantity, type RecipeMatchResult } from "@/lib/domain";
 import type { Recipe, ShoppingListItem } from "@/types/domain";
+
+export function scaleDemoRecipe(recipe: Recipe, servings: number): Recipe {
+  return {
+    ...recipe,
+    servings,
+    ingredients: recipe.ingredients.map((ingredient) => ({
+      ...ingredient,
+      quantity: scaleQuantity(ingredient.quantity, recipe.servings, servings),
+    })),
+  };
+}
 
 export function addMissingIngredients(
   current: readonly ShoppingListItem[],
@@ -12,14 +23,22 @@ export function addMissingIngredients(
     const ingredientId = missing.key.startsWith("id:")
       ? missing.key.slice(3)
       : null;
-    const existing = next.some(
+    const existingIndex = next.findIndex(
       (item) =>
         item.recipeId === recipe.id &&
         (ingredientId
           ? item.ingredientId === ingredientId
           : item.ingredientName === missing.name),
     );
-    if (existing) continue;
+    if (existingIndex !== -1) {
+      const existing = next[existingIndex]!;
+      next[existingIndex] = {
+        ...existing,
+        quantity: missing.requiredQuantity,
+        unit: missing.requiredUnit,
+      };
+      continue;
+    }
 
     next.push({
       id: `demo-${recipe.id}-${missing.key}`,
