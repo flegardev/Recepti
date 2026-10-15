@@ -1,7 +1,8 @@
 # 🎓 Nana's Recipes (Recepti) — Beginner's Learning Guide
 
 ## What This Project Does
-**Recepti** is a private household cookbook Progressive Web App (PWA) built with Next.js 15, React 19, and Supabase. It features an algorithmic pantry ingredient matcher ("What can I cook with ingredients currently in my pantry?"), step-by-step cooking mode, automatic shopping list aggregation, and PostgreSQL Row-Level Security (RLS).
+
+**Recepti** is a private household cookbook Progressive Web App (PWA) built with Next.js 16, React 19, and Supabase. It features an algorithmic pantry ingredient matcher ("What can I cook with ingredients currently in my pantry?"), step-by-step cooking mode, automatic shopping list aggregation, and PostgreSQL Row-Level Security (RLS).
 
 ---
 
